@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Tracker - Network Security Dashboard</title>
+    <meta name="description" content="AI-powered WiFi device tracking and monitoring system">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content login-modal">
+            <div class="login-header">
+                <div class="logo">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="24" r="24" fill="url(#logoGradient)"/>
+                        <path d="M24 12C18.48 12 14 16.48 14 22C14 24.85 15.18 27.42 17.08 29.25L24 36L30.92 29.25C32.82 27.42 34 24.85 34 22C34 16.48 29.52 12 24 12ZM24 25C22.34 25 21 23.66 21 22C21 20.34 22.34 19 24 19C25.66 19 27 20.34 27 22C27 23.66 25.66 25 24 25Z" fill="white"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
+                                <stop stop-color="#6366f1"/>
+                                <stop offset="1" stop-color="#a855f7"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1>WiFi Tracker</h1>
+                <p>Network Security Dashboard</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>Sign In</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+                    </svg>
+                </button>
+                <p id="loginError" class="error-message"></p>
+            </form>
+            <div class="login-footer">
+                <p>Default credentials: admin / admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="24" r="24" fill="url(#logoGradient2)"/>
+                        <path d="M24 12C18.48 12 14 16.48 14 22C14 24.85 15.18 27.42 17.08 29.25L24 36L30.92 29.25C32.82 27.42 34 24.85 34 22C34 16.48 29.52 12 24 12Z" fill="white"/>
+                        <defs>
+                            <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
+                                <stop stop-color="#6366f1"/>
+                                <stop offset="1" stop-color="#a855f7"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="brand-name">WiFi Tracker</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="devices">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                    </svg>
+                    <span>Devices</span>
+                    <span id="deviceCount" class="badge">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="scan">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"/>
+                    </svg>
+                    <span>Network Scan</span>
+                </a>
+                <a href="#" class="nav-item" data-page="alerts">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                    <span>Alerts</span>
+                    <span id="alertCount" class="badge badge-warning">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ml">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 7H7v6h6V7z"/>
+                        <path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"/>
+                    </svg>
+                    <span>ML Detection</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="avatar">
+                        <span id="userInitial">A</span>
+                    </div>
+                    <div class="user-details">
+                        <span id="userName">Admin</span>
+                        <span class="role">Administrator</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn-icon" title="Logout">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <span class="header-subtitle">Network Security Overview</span>
+                </div>
+                <div class="header-right">
+                    <div class="connection-status" id="wsStatus">
+                        <span class="status-dot"></span>
+                        <span>Connecting...</span>
+                    </div>
+                    <button id="scanNowBtn" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/>
+                        </svg>
+                        <span>Scan Network</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content Container -->
+            <div class="page-content" id="pageContent">
+                <!-- Dashboard Page -->
+                <div id="dashboardPage" class="page active">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="totalDevices">0</span>
+                                <span class="stat-label">Total Devices</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 3.636a1 1 0 010 1.414 7 7 0 000 9.9 1 1 0 11-1.414 1.414 9 9 0 010-12.728 1 1 0 011.414 0z"/>
+                                    <path fill-rule="evenodd" d="M16.364 3.636a1 1 0 00-1.414 1.414 7 7 0 010 9.9 1 1 0 001.414 1.414 9 9 0 000-12.728z"/>
+                                    <path fill-rule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="onlineDevices">0</span>
+                                <span class="stat-label">Online</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon yellow">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="alertsCount">0</span>
+                                <span class="stat-label">Active Alerts</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">
+                                <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="suspiciousCount">0</span>
+                                <span class="stat-label">Suspicious</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Device Activity</h3>
+                                <span class="card-subtitle">Last 7 days</span>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Devices by Vendor</h3>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="vendorChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Activity</h3>
+                            <a href="#" class="view-all" data-page="alerts">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div id="activityList" class="activity-list">
+                                <div class="loading-spinner">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Devices Page -->
+                <div id="devicesPage" class="page">
+                    <div class="page-header">
+                        <div class="search-box">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                            </svg>
+                            <input type="text" id="deviceSearch" placeholder="Search devices...">
+                        </div>
+                        <div class="filter-group">
+                            <select id="deviceFilter">
+                                <option value="">All Devices</option>
+                                <option value="online">Online Only</option>
+                                <option value="trusted">Trusted</option>
+                                <option value="suspicious">Suspicious</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="devices-grid" id="devicesGrid">
+                        <div class="loading-spinner">Loading devices...</div>
+                    </div>
+                </div>
+
+                <!-- Scan Page -->
+                <div id="scanPage" class="page">
+                    <div class="scan-controls card">
+                        <div class="card-header">
+                            <h3>Network Scanner</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="scan-form">
+                                <div class="form-group">
+                                    <label for="networkRange">Network Range</label>
+                                    <input type="text" id="networkRange" placeholder="192.168.1.0/24">
+                                </div>
+                                <div class="form-group">
+                                    <label for="scanType">Scan Type</label>
+                                    <select id="scanType">
+                                        <option value="arp">ARP Scan (Fast)</option>
+                                        <option value="icmp">ICMP Ping</option>
+                                        <option value="full">Full Scan</option>
+                                    </select>
+                                </div>
+                                <button id="startScanBtn" class="btn btn-primary">
+                                    <span>Start Scan</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scan-status card" id="scanStatusCard">
+                        <div class="card-header">
+                            <h3>Scan Status</h3>
+                            <span id="scanStatusBadge" class="badge">Idle</span>
+                        </div>
+                        <div class="card-content">
+                            <div id="scanProgress" class="scan-progress hidden">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <span class="progress-text">Scanning...</span>
+                            </div>
+                            <div id="scanResults">
+                                <p>No recent scan results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts Page -->
+                <div id="alertsPage" class="page">
+                    <div class="page-header">
+                        <div class="filter-group">
+                            <select id="alertFilter">
+                                <option value="">All Alerts</option>
+                                <option value="new_device">New Devices</option>
+                                <option value="anomaly_detected">Anomalies</option>
+                                <option value="suspicious_activity">Suspicious</option>
+                            </select>
+                            <select id="alertSeverity">
+                                <option value="">All Severities</option>
+                                <option value="critical">Critical</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <button id="ackAllBtn" class="btn btn-secondary">Acknowledge All</button>
+                    </div>
+                    <div class="alerts-list" id="alertsList">
+                        <div class="loading-spinner">Loading alerts...</div>
+                    </div>
+                </div>
+
+                <!-- ML Page -->
+                <div id="mlPage" class="page">
+                    <div class="ml-status card">
+                        <div class="card-header">
+                            <h3>ML Model Status</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="ml-models" id="mlModelsStatus">
+                                <div class="loading-spinner">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Train Models</h3>
+                        </div>
+                        <div class="card-content">
+                            <p>Train ML models using collected device behavior data.</p>
+                            <button id="trainModelsBtn" class="btn btn-primary">
+                                <span>Train Models</span>
+                            </button>
+                            <div id="trainingResults" class="mt-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/devices.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
